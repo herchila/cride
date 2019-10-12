@@ -4,7 +4,7 @@
 from django.urls import path
 
 # Views
-from cride.circles.views import UserLoginAPIView
+from cride.users.views import UserLoginAPIView
 
 
 urlpatterns = [
