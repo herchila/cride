@@ -1,5 +1,9 @@
 """Users serializers"""
 
+# Utilities
+import jwt
+from datetime import timedelta
+
 # Django
 from django.conf import settings
 from django.contrib.auth import password_validation, authenticate
@@ -16,13 +20,14 @@ from rest_framework.authtoken.models import Token
 # Models
 from cride.users.models import User, Profile
 
-# Utilities
-import jwt
-from datetime import timedelta
+# Serializers
+from cride.users.serializers.profiles import ProfileModelSerializer
 
 
 class UserModelSerializer(serializers.ModelSerializer):
     """User model serializer."""
+
+    profile = ProfileModelSerializer(read_only=True)
 
     class Meta:
         model = User
@@ -31,7 +36,8 @@ class UserModelSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'email',
-            'phone_number'
+            'phone_number',
+            'profile'
         )
 
 
