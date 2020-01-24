@@ -7,7 +7,7 @@ from django.db import models
 from cride.utils.models import CRideModel
 
 
-class Rides(CRideModel):
+class Ride(CRideModel):
     """Ride model."""
 
     # Los Rides son lo mas importante de la aplicacion.
@@ -25,7 +25,7 @@ class Rides(CRideModel):
     arraival_location = models.CharField(max_length=255)
     arraival_date = models.DateTimeField()
 
-    raiting = models.FloatField(null=True)
+    rating = models.FloatField(null=True)
 
     is_active = models.BooleanField(
         'active status',
@@ -38,7 +38,7 @@ class Rides(CRideModel):
         return '{_from} to {to} | {day} {i_time} - {f_time}'.format(
             _from=self.departure_location,
             to=self.arraival_location,
-            day=self.departure_date..strftime('%a %d %b'),
+            day=self.departure_date.strftime('%a %d %b'),
             i_time=self.departure_date.strftime('%I:%M: %p'),
             f_time=self.arraival_date.strftime('%I:%M: %p')
         )
