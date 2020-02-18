@@ -9,6 +9,7 @@ from cride.users.serializers import UserModelSerializer
 # Models
 from cride.rides.models import Ride
 from cride.circles.models import Membership
+from cride.users.models import User
 
 # Utilities
 from datetime import timedelta
@@ -109,3 +110,74 @@ class CreateRideSerializer(serializers.ModelSerializer):
             profile.save()
 
             return ride
+
+
+class JoinRideSerializer(serializers.ModelSerializer):
+    """Join ride serializer."""
+
+    passenger = serializers.IntegerField()
+
+    class Meta:
+        """Meta class."""
+
+        model = Ride
+        fields = ('passenger',)
+
+    def validate_passenger(self, data):
+        """Verify passenger exists and is a circle member."""
+        try:
+            user = User.objects.get(pk=data)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('Invalid passenger.')
+
+        circle = self.context['circle']
+        try:
+            membership = Membership.objects.filter(
+                user=user,
+                circle=circle,
+                is_active=True
+            )
+        except Membership.DoesNotExist:
+            raise serializers.ValidationError('User is no an active member of the circle.')
+
+        self.context['user'] = user
+        self.context['member'] = membership
+        return data
+
+    def validate(self, data):
+        """Verify rides allow new passengers."""
+        ride = self.context['ride']
+        if ride.departure_data <= timezone.now():
+            raise serializers.ValidationError("You can't join this ride now.")
+
+        if ride.available_seats < 1:
+            raise serializers.ValidationError('Ride is already full!')
+
+        if Ride.objects.filter(passengers__pk=data['passenger']):
+            raise serializers.ValidationError('Passenger is already in this trip.')
+
+        return data
+
+    def update(self, instance, data):
+        """Add passenger to ride and update stats."""
+        ride = self.context['ride']
+        user = self.context['user']
+
+        ride.passenger.add(user)
+
+        # Profile
+        profile = user.profile
+        profile.rides_taken += 1
+        profile.save()
+
+        # Membership
+        member = self.context['member']
+        member.rides_taken += 1
+        member.save()
+
+        # Circle
+        circle = self.context['circle']
+        circle.rides_taken += 1
+        circle.save()
+
+        return ride
