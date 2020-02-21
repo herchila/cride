@@ -9,7 +9,7 @@ from cride.utils.models import CRideModel
 
 class Circle(CRideModel):
     """Circle model.
-    
+
     A Circle is a private group where rides are offered and taken
     by its members. To join a circle a user must receive an unique
     invitation code from an existing circle member.
@@ -17,9 +17,15 @@ class Circle(CRideModel):
 
     name = models.CharField('circle name', max_length=140)
     slug_name = models.SlugField(unique=True, max_length=40)
-    
+
     about = models.CharField('circle description', max_length=255)
     picture = models.ImageField(upload_to='circles/pictures', blank=True, null=True)
+
+    members = models.ManyToManyField(
+        'users.User',
+        through='circles.Membership',
+        through_fields=('circle', 'user')
+    )
 
     # Stats
     rides_offered = models.PositiveIntegerField(default=0)
@@ -49,7 +55,7 @@ class Circle(CRideModel):
     def __str__(self):
         """Return circle name."""
         return self.name
-    
+
     class Meta(CRideModel.Meta):
         """Meta class."""
         ordering = ['-rides_taken', '-rides_offered']
