@@ -84,7 +84,7 @@ class CreateRideSerializer(serializers.ModelSerializer):
         except Membership.DoesNotExist:
             raise serializers.ValidationError('User is no an active member of the circle.')
 
-        if data['arraival_date'] <= data['departure_date']:
+        if data['arrival_date'] <= data['departure_date']:
             raise serializers.ValidationError('Departure date must happen after arrival date.')
 
         self.context['membership'] = membership

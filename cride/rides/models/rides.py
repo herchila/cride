@@ -22,8 +22,8 @@ class Ride(CRideModel):
 
     departure_location = models.CharField(max_length=255)
     departure_date = models.DateTimeField()
-    arraival_location = models.CharField(max_length=255)
-    arraival_date = models.DateTimeField()
+    arrival_location = models.CharField(max_length=255)
+    arrival_date = models.DateTimeField()
 
     rating = models.FloatField(null=True)
 
@@ -37,8 +37,8 @@ class Ride(CRideModel):
         """Return ride details."""
         return '{_from} to {to} | {day} {i_time} - {f_time}'.format(
             _from=self.departure_location,
-            to=self.arraival_location,
+            to=self.arrival_location,
             day=self.departure_date.strftime('%a %d %b'),
             i_time=self.departure_date.strftime('%I:%M: %p'),
-            f_time=self.arraival_date.strftime('%I:%M: %p')
+            f_time=self.arrival_date.strftime('%I:%M: %p')
         )

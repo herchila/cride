@@ -58,8 +58,8 @@ def disable_finished_rides():
 
     # Update rides that have already finished
     rides = Ride.objects.filter(
-        arraival_date__gte=now,
-        arraival_date__lte=offset,
+        arrival_date__gte=now,
+        arrival_date__lte=offset,
         is_active=True
     )
     rides.update(is_active=False)
